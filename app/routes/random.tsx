@@ -1,4 +1,6 @@
+import { Center } from "@bedrock-layout/center";
 import { useLoaderData } from "@remix-run/react";
+import { Box, Card, CardHeader, Header, Heading } from "grommet";
 import supabase from "~/utils/supabase";
 
 export const loader = async () => {
@@ -17,13 +19,23 @@ export const loader = async () => {
 
 export default function Index() {
   const { restaurants } = useLoaderData();
+  const randomRestaurant =
+    restaurants[Math.floor(Math.random() * restaurants.length)];
 
   return (
-    <>
-      <h1>Lunch randomizer</h1>
-      {restaurants.map((restaurant) => (
-        <section key={restaurant.id}>{restaurant.name}</section>
-      ))}
-    </>
+    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+      <Box
+        direction="column"
+        border={{ color: "brand", size: "large" }}
+        pad="medium"
+      >
+        <Header background="brand">
+          <Heading margin="none">Lunch randomizer</Heading>
+        </Header>
+        <Card height="small" width="small" background="light-1">
+          <CardHeader pad="medium">{randomRestaurant.name}</CardHeader>
+        </Card>
+      </Box>
+    </div>
   );
 }
