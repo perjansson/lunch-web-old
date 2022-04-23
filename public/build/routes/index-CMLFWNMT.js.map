@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["browser-route-module:/Users/pj/Work/Code/lunch-web/app/routes/index.tsx?browser", "../../../app/routes/index.tsx"],
+  "sourcesContent": ["export { default } from \"/Users/pj/Work/Code/lunch-web/app/routes/index.tsx\";", "import { Link } from \"@remix-run/react\";\n\nconst pages = [\"random\", \"list\", \"map\"];\n\nexport default function Index() {\n  return (\n    <div style={{ fontFamily: \"system-ui, sans-serif\", lineHeight: \"1.4\" }}>\n      <h1>Where to have lunch?</h1>\n      {pages.map((page) => (\n        <Link to={page}>{page.toUpperCase()}</Link>\n      ))}\n    </div>\n  );\n}\n"],
+  "mappings": ";;;;;;;;;AAAA;;;ACAA;AAEA,IAAM,QAAQ,CAAC,UAAU,QAAQ;AAElB,iBAAiB;AAC9B,SACE,oCAAC,OAAD;AAAA,IAAK,OAAO,EAAE,YAAY,yBAAyB,YAAY;AAAA,KAC7D,oCAAC,MAAD,MAAI,yBACH,MAAM,IAAI,CAAC,SACV,oCAAC,MAAD;AAAA,IAAM,IAAI;AAAA,KAAO,KAAK;AAAA;",
+  "names": []
+}

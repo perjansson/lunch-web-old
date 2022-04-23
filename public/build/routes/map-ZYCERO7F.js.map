@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["browser-route-module:/Users/pj/Work/Code/lunch-web/app/routes/map.tsx?browser", "../../../app/routes/map.tsx"],
+  "sourcesContent": ["export { default } from \"/Users/pj/Work/Code/lunch-web/app/routes/map.tsx\";", "export default function Map() {\n  return <h1>Lunch map</h1>;\n}\n"],
+  "mappings": ";;;;;;AAAA;;;ACAA;AAAe,eAAe;AAC5B,SAAO,oCAAC,MAAD,MAAI;AAAA;",
+  "names": []
+}

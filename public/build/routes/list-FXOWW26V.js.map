@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["browser-route-module:/Users/pj/Work/Code/lunch-web/app/routes/list.tsx?browser", "../../../app/routes/list.tsx"],
+  "sourcesContent": ["export { default } from \"/Users/pj/Work/Code/lunch-web/app/routes/list.tsx\";", "import { Center } from \"@bedrock-layout/center\";\n\nexport const loader = () => {\n  return {\n    env: {\n      SUPABASE_URL: process.env.SUPABASE_URL,\n      SUPABASE_KEY: process.env.SUPABASE_KEY,\n    },\n  };\n};\n\nexport default function List() {\n  return (\n    <div style={{ fontFamily: \"system-ui, sans-serif\", lineHeight: \"1.4\" }}>\n      <Center maxWidth=\"90%\">\n        <h1 style={{ textAlign: \"center\" }}>Lunch list</h1>\n      </Center>\n    </div>\n  );\n}\n"],
+  "mappings": ";;;;;;;;;AAAA;;;ACAA;AAWe,gBAAgB;AAC7B,SACE,oCAAC,OAAD;AAAA,IAAK,OAAO,EAAE,YAAY,yBAAyB,YAAY;AAAA,KAC7D,oCAAC,QAAD;AAAA,IAAQ,UAAS;AAAA,KACf,oCAAC,MAAD;AAAA,IAAI,OAAO,EAAE,WAAW;AAAA,KAAY;AAAA;",
+  "names": []
+}

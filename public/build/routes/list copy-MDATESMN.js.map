@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["browser-route-module:/Users/pj/Work/Code/lunch-web/app/routes/list copy.tsx?browser", "../../../app/routes/list copy.tsx"],
+  "sourcesContent": ["export { default } from \"/Users/pj/Work/Code/lunch-web/app/routes/list copy.tsx\";", "export default () => <h1>Lunch list</h1>;\n"],
+  "mappings": ";;;;;;AAAA;;;ACAA;AAAA,IAAO,oBAAQ,MAAM,oCAAC,MAAD,MAAI;",
+  "names": []
+}

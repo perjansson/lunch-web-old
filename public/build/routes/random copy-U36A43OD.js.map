@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["browser-route-module:/Users/pj/Work/Code/lunch-web/app/routes/random copy.tsx?browser", "../../../app/routes/random copy.tsx"],
+  "sourcesContent": ["export { default } from \"/Users/pj/Work/Code/lunch-web/app/routes/random copy.tsx\";", "export default () => <h1>Lunch randomizer</h1>;\n"],
+  "mappings": ";;;;;;AAAA;;;ACAA;AAAA,IAAO,sBAAQ,MAAM,oCAAC,MAAD,MAAI;",
+  "names": []
+}
