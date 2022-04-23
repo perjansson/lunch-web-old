@@ -3,7 +3,7 @@ import { PadBox } from "@bedrock-layout/padbox";
 import { Reel } from "@bedrock-layout/reel";
 import { Link } from "@remix-run/react";
 
-const pages = ["random", "list", "map"];
+const pages = ["random"];
 
 export default function Index() {
   return (

@@ -1,11 +1,12 @@
 {
-  "name": "remix-template-remix",
+  "name": "lunch-web",
   "private": true,
   "description": "",
   "license": "",
   "sideEffects": false,
   "scripts": {
     "build": "remix build",
+    "deploy": "fly deploy --remote-only",
     "dev": "node -r dotenv/config node_modules/.bin/remix dev",
     "start": "remix-serve build"
   },
