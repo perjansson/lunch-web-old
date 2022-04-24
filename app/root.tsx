@@ -20,6 +20,7 @@ export const loader = () => {
     env: {
       SUPABASE_URL: process.env.SUPABASE_URL,
       SUPABASE_KEY: process.env.SUPABASE_KEY,
+      GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
     },
   };
 };
