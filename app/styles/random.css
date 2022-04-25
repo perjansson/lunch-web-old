@@ -3,14 +3,15 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   font-family: Share Tech Mono, monospace;
   text-align: center;
 }
 
-h1 {
+.title {
   font-size: 188px;
+  line-height: 0.9;
 }
 
 .container:after {
@@ -20,41 +21,53 @@ h1 {
   left: 0;
   bottom: 0;
   right: 0;
+  height: 100%;
   box-shadow: inset 0px 0px 150px #000;
+  pointer-events: none;
+}
+
+.map {
+  height: 40vh;
+  width: 100%;
 }
 
   
 /* X-Large devices (large desktops, less than 1400px) */
 @media (max-width: 1399.98px) {
-  h1 {
+  .title {
     font-size: 164px;
   }
 }
 
 /* Large devices (desktops, less than 1200px) */
 @media (max-width: 1199.98px) {
-  h1 {
+  .title {
     font-size: 144px;
   }
 }
 
 /* Small devices (landscape phones, less than 768px) */
 @media (max-width: 767.98px) {
-  h1 {
+  .title {
     font-size: 124px;
   }
 }
 
 /* Medium devices (tablets, less than 992px) */
 @media (max-width: 991.98px) {
-  h1 {
+  .title {
     font-size: 88px;
   }
 }
 
 /* X-Small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) {
-  h1 {
+  .title {
     font-size: 64px;
   }
+
+.map {
+  height: 70vh;
+  width: 100%;
+}
 }

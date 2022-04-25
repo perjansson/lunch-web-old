@@ -1,12 +1,12 @@
 export interface Coordinates {
-  lat: number;
-  lng: number;
+  lat: string | number;
+  lng: string | number;
 }
 
 export interface Restaurant {
   id: number;
   name: string;
   address: string;
-  lat: number;
-  lng: number;
+  lat: string;
+  lng: string;
 }
