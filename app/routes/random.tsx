@@ -1,8 +1,14 @@
 import { useLoaderData } from "@remix-run/react";
-import { Box, Card, CardHeader, Header, Heading } from "grommet";
 import { useEffect, useState } from "react";
+
 import type { Restaurant } from "~/types";
 import { getAllRestaurants } from "~/utils/supabase";
+
+import styles from "~/styles/random.css";
+
+export function links() {
+  return [{ rel: "stylesheet", href: styles }];
+}
 
 interface LoaderData {
   restaurants: Restaurant[] | null;
@@ -36,22 +42,14 @@ export default function Index() {
     );
   }, [randomRestaurant, restaurants]);
 
+  if (!randomRestaurant) {
+    return null;
+  }
+
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <Header background="brand">
-        <Heading margin="none">Lunch randomizer</Heading>
-      </Header>
-      <Box
-        direction="column"
-        border={{ color: "brand", size: "large" }}
-        pad="medium"
-      >
-        {randomRestaurant && (
-          <Card height="small" width="small" background="light-1">
-            <CardHeader pad="medium">{randomRestaurant.name}</CardHeader>
-          </Card>
-        )}
-      </Box>
-    </div>
+    <section className="container">
+      <h1>{randomRestaurant.name}</h1>
+      <address>{randomRestaurant.address}</address>
+    </section>
   );
 }

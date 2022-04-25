@@ -15,6 +15,19 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
+export function links() {
+  return [
+    {
+      rel: "stylesheet",
+      href: "https://unpkg.com/modern-css-reset@1.4.0/dist/reset.min.css",
+    },
+    {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap",
+    },
+  ];
+}
+
 export const loader = () => {
   return {
     env: {
