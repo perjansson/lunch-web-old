@@ -3,6 +3,31 @@ import env from "./environment"
 
 const googleApiKey = env.GOOGLE_API_KEY
 
+export const GOOGLE_MAP_URL = `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${googleApiKey}`
+
+export const ORIGIN = { lat: 60.44847, lng: 22.26732 }
+
+export const MAP_SETTINGS = {
+  DEFAULT_MAP_OPTIONS: {
+    scrollwheel: false,
+    mapTypeControl: false,
+    fullscreenControl: false,
+    streetViewControl: false,
+  },
+  DEFAULT_CENTER: ORIGIN,
+  MARKER_SIZE: 35,
+  PIXEL_OFFSET: {
+    MARKER: {
+      X: 0,
+      Y: -35,
+    },
+  },
+  DIRECTIONS_OPTIONS: {
+    suppressMarkers: true,
+    preserveViewport: true,
+  },
+}
+
 export async function getCoordinatesForAddress(
   address: string
 ): Promise<Coordinates> {
@@ -21,7 +46,7 @@ export async function getCoordinatesForAddress(
 export async function getDirections(
   origin: Coordinates,
   destination: Coordinates
-) {
+): Promise<google.maps.DirectionsResult> {
   const DirectionsService = new window.google.maps.DirectionsService()
   return new Promise((resolve, reject) => {
     DirectionsService.route(
@@ -37,7 +62,10 @@ export async function getDirections(
         travelMode: window.google.maps.TravelMode.WALKING,
       },
       (result, status) => {
-        if (status === window.google.maps.DirectionsStatus.OK) {
+        if (
+          status === window.google.maps.DirectionsStatus.OK &&
+          result !== null
+        ) {
           resolve(result)
         } else {
           reject(status)

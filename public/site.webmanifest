@@ -1,0 +1,12 @@
+{
+    "theme_color": "#2b2b2b",
+    "background_color": "#2b2b2b",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "/",
+    "name": "Reaktor Turku Lunch Web",
+    "short_name": "Reaktor Turku Lunch Web",
+    "description": "Reaktor Turku Lunch Web ",
+    "lang": "en",
+    "orientation": "portrait"
+}

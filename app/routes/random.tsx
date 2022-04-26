@@ -1,5 +1,5 @@
 import { useLoaderData } from "@remix-run/react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   Marker,
   GoogleMap,
@@ -10,40 +10,16 @@ import {
 import mapStyles from "~/styles/mapStyles.json"
 
 import type { Coordinates, Restaurant } from "~/types"
-import {
-  getAllRestaurants,
-  getAllRestaurantsWithDirections,
-} from "~/utils/supabase"
+import { getAllRestaurants } from "~/utils/supabase"
 
 import styles from "~/styles/random.css"
-import env from "~/utils/environment"
-import { getDirections } from "~/utils/google"
+import {
+  getDirections,
+  GOOGLE_MAP_URL,
+  MAP_SETTINGS,
+  ORIGIN,
+} from "~/utils/google"
 import { isXSmall } from "~/utils/mediaQuery"
-
-const GOOGLE_MAP_URL = `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${env.GOOGLE_API_KEY}`
-
-const ORIGIN = { lat: 60.44847, lng: 22.26732 }
-
-const MAP_SETTINGS = {
-  DEFAULT_MAP_OPTIONS: {
-    scrollwheel: false,
-    mapTypeControl: false,
-    fullscreenControl: false,
-    streetViewControl: false,
-  },
-  DEFAULT_CENTER: ORIGIN,
-  MARKER_SIZE: 35,
-  PIXEL_OFFSET: {
-    MARKER: {
-      X: 0,
-      Y: -35,
-    },
-  },
-  DIRECTIONS_OPTIONS: {
-    suppressMarkers: true,
-    preserveViewport: true,
-  },
-}
 
 export function links() {
   return [{ rel: "stylesheet", href: styles }]
@@ -77,6 +53,11 @@ export default function Index() {
     setRestaurant(restaurants[Math.floor(Math.random() * restaurants.length)])
   }, [restaurant, restaurants])
 
+  const directionsResponse = useMemo(
+    () => toDirection(restaurant?.direction),
+    [restaurant]
+  )
+
   if (!restaurant) {
     return null
   }
@@ -87,18 +68,48 @@ export default function Index() {
         <h1 className="title">{restaurant.name}</h1>
         <address>{restaurant.address}</address>
       </header>
-      <Map
-        origin={ORIGIN}
-        destination={restaurant}
-        fetchFreshDirection={!restaurant.direction}
-        googleMapURL={GOOGLE_MAP_URL}
-        loadingElement={<div className="map" />}
-        containerElement={<div className="map" />}
-        mapElement={<div className="map" />}
-      />
+      <div className="mapContainer">
+        <Info>
+          <div>
+            <img
+              src="/icons/map-location.png"
+              className="icon"
+              alt="Distance to location"
+            />
+            <div>{directionsResponse?.routes[0].legs[0].distance?.text}</div>
+          </div>
+          <div>
+            <img
+              src="/icons/clock.png"
+              className="icon"
+              alt="Distance to location"
+            />
+            <div>{directionsResponse?.routes[0].legs[0].duration?.text}</div>
+          </div>{" "}
+        </Info>
+        <Map
+          origin={ORIGIN}
+          destination={restaurant}
+          fetchFreshDirection={!restaurant.direction}
+          googleMapURL={GOOGLE_MAP_URL}
+          loadingElement={<div className="map" />}
+          containerElement={<div className="map" />}
+          mapElement={<div className="map" />}
+        />
+      </div>
     </section>
   )
 }
+
+function toDirection(direction?: string): google.maps.DirectionsResult | null {
+  if (!direction) {
+    return null
+  }
+
+  return JSON.parse(direction)
+}
+
+const Info: React.FC = ({ children }) => <div className="info">{children}</div>
 
 const Map = withScriptjs(
   withGoogleMap(
@@ -112,9 +123,10 @@ const Map = withScriptjs(
       fetchFreshDirection?: boolean
     }) => {
       const mapRef = useRef(null)
-      const [directions, setDirections] = useState<string>(
-        destination.direction
-      )
+      const [directionsResult, setDirectionsResult] =
+        useState<google.maps.DirectionsResult>(
+          JSON.parse(destination.direction)
+        )
 
       useEffect(() => {
         if (!origin || !destination || !fetchFreshDirection) {
@@ -124,9 +136,9 @@ const Map = withScriptjs(
         const fetchDirections = async () => {
           try {
             const directions = await getDirections(origin, destination)
-            setDirections(JSON.stringify(directions))
+            setDirectionsResult(directions)
           } catch (error) {
-            console.error("### ERROR getting Maps directions", error)
+            console.error("Error getting directions from Google Maps", error)
           }
         }
 
@@ -156,7 +168,7 @@ const Map = withScriptjs(
             }}
           />
           <DirectionsRenderer
-            directions={JSON.parse(directions)}
+            directions={directionsResult}
             options={MAP_SETTINGS.DIRECTIONS_OPTIONS}
           />
         </GoogleMap>
