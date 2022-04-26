@@ -146,12 +146,8 @@ const Map = withScriptjs(
       }, [origin, destination, fetchFreshDirection])
 
       const center = {
-        lat:
-          parseFloat(origin.lat) +
-          (parseFloat(destination.lat) - parseFloat(origin.lat)) / 2,
-        lng:
-          parseFloat(origin.lng) +
-          (parseFloat(destination.lng) - parseFloat(origin.lng)) / 2,
+        lat: origin.lat + (destination.lat - origin.lat) / 2,
+        lng: origin.lng + (destination.lng - origin.lng) / 2,
       }
 
       return (
@@ -164,18 +160,8 @@ const Map = withScriptjs(
             styles: mapStyles,
           }}
         >
-          <Marker
-            position={{
-              lat: parseFloat(origin.lat),
-              lng: parseFloat(origin.lng),
-            }}
-          />
-          <Marker
-            position={{
-              lat: parseFloat(destination.lat),
-              lng: parseFloat(destination.lng),
-            }}
-          />
+          <Marker position={origin} />
+          <Marker position={destination} />
           <DirectionsRenderer
             directions={directionsResult}
             options={MAP_SETTINGS.DIRECTIONS_OPTIONS}

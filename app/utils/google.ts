@@ -51,14 +51,8 @@ export async function getDirections(
   return new Promise((resolve, reject) => {
     DirectionsService.route(
       {
-        origin: new window.google.maps.LatLng(
-          parseFloat(origin.lat),
-          parseFloat(origin.lng)
-        ),
-        destination: new window.google.maps.LatLng(
-          parseFloat(destination.lat),
-          parseFloat(destination.lng)
-        ),
+        origin: new window.google.maps.LatLng(origin),
+        destination: new window.google.maps.LatLng(destination),
         travelMode: window.google.maps.TravelMode.WALKING,
       },
       (result, status) => {
