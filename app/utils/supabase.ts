@@ -76,11 +76,11 @@ async function updateDirectionsForRestaurant(
   restaurant: Restaurant
 ) {
   try {
-    const direction = await getDirections(origin, restaurant)
+    const directions = await getDirections(origin, restaurant)
 
     const { error } = await supabase
       .from<Restaurant>("Restaurant")
-      .update({ direction: JSON.stringify(direction) })
+      .update({ directions })
       .eq("id", restaurant.id)
 
     if (error) {
