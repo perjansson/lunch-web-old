@@ -12,6 +12,7 @@
 .title {
   font-size: 188px;
   line-height: 0.9;
+  margin-bottom: 8px;
 }
 
 .container:after {
@@ -21,14 +22,15 @@
   left: 0;
   bottom: 0;
   right: 0;
-  height: 100%;
-  box-shadow: inset 0px 0px 150px #000;
+  min-height: 100vh;
+  box-shadow: inset 0px 0px 250px #000;
   pointer-events: none;
 }
 
 .map {
   height: 50vh;
   width: 100%;
+  margin-bottom: 100px;
 }
 
   
@@ -62,12 +64,16 @@
 
 /* X-Small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) {
-  .title {
-    font-size: 64px;
+  .container:after {
+    box-shadow: inset 0px 0px 50px #000;
   }
 
-.map {
-  height: 70vh;
-  width: 100%;
-}
+  .title {
+    font-size: 40px;
+  }
+
+  .map {
+    height: 50vh;
+    width: 100%;
+  }
 }

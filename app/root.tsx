@@ -1,4 +1,4 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { MetaFunction } from "@remix-run/node"
 import {
   Links,
   LiveReload,
@@ -7,13 +7,13 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
-} from "@remix-run/react";
+} from "@remix-run/react"
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "Reaktor Turku Lunch Web",
   viewport: "width=device-width,initial-scale=1",
-});
+})
 
 export function links() {
   return [
@@ -25,7 +25,11 @@ export function links() {
       rel: "stylesheet",
       href: "https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap",
     },
-  ];
+    {
+      rel: "manifest",
+      href: "/site.webmanifest",
+    },
+  ]
 }
 
 export const loader = () => {
@@ -35,11 +39,11 @@ export const loader = () => {
       SUPABASE_KEY: process.env.SUPABASE_KEY,
       GOOGLE_API_KEY: process.env.GOOGLE_API_KEY,
     },
-  };
-};
+  }
+}
 
 export default function App() {
-  const { env } = useLoaderData();
+  const { env } = useLoaderData()
 
   return (
     <html lang="en">
@@ -59,5 +63,5 @@ export default function App() {
         ></script>
       </body>
     </html>
-  );
+  )
 }

@@ -18,6 +18,7 @@ import {
 import styles from "~/styles/random.css"
 import env from "~/utils/environment"
 import { getDirections } from "~/utils/google"
+import { isXSmall } from "~/utils/mediaQuery"
 
 const GOOGLE_MAP_URL = `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${env.GOOGLE_API_KEY}`
 
@@ -31,7 +32,6 @@ const MAP_SETTINGS = {
     streetViewControl: false,
   },
   DEFAULT_CENTER: ORIGIN,
-  DEFAULT_ZOOM: 15,
   MARKER_SIZE: 35,
   PIXEL_OFFSET: {
     MARKER: {
@@ -85,6 +85,7 @@ export default function Index() {
     <section className="container">
       <header className="header">
         <h1 className="title">{restaurant.name}</h1>
+        <address>{restaurant.address}</address>
       </header>
       <Map
         origin={ORIGIN}
@@ -95,7 +96,6 @@ export default function Index() {
         containerElement={<div className="map" />}
         mapElement={<div className="map" />}
       />
-      <address>{restaurant.address}</address>
     </section>
   )
 }
@@ -136,7 +136,7 @@ const Map = withScriptjs(
       return (
         <GoogleMap
           ref={mapRef}
-          defaultZoom={MAP_SETTINGS.DEFAULT_ZOOM}
+          defaultZoom={isXSmall() ? 13 : 15}
           defaultCenter={MAP_SETTINGS.DEFAULT_CENTER}
           defaultOptions={{
             ...MAP_SETTINGS.DEFAULT_MAP_OPTIONS,
