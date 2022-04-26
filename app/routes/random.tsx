@@ -145,11 +145,20 @@ const Map = withScriptjs(
         fetchDirections()
       }, [origin, destination, fetchFreshDirection])
 
+      const center = {
+        lat:
+          parseFloat(origin.lat) +
+          (parseFloat(destination.lat) - parseFloat(origin.lat)) / 2,
+        lng:
+          parseFloat(origin.lng) +
+          (parseFloat(destination.lng) - parseFloat(origin.lng)) / 2,
+      }
+
       return (
         <GoogleMap
           ref={mapRef}
           defaultZoom={isXSmall() ? 13 : 15}
-          defaultCenter={MAP_SETTINGS.DEFAULT_CENTER}
+          defaultCenter={center}
           defaultOptions={{
             ...MAP_SETTINGS.DEFAULT_MAP_OPTIONS,
             styles: mapStyles,
