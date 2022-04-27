@@ -1,5 +1,5 @@
 import { useLoaderData } from "@remix-run/react"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import {
   Marker,
   GoogleMap,
@@ -10,10 +10,7 @@ import {
 import mapStyles from "~/styles/mapStyles.json"
 
 import type { Coordinates, Restaurant } from "~/types"
-import {
-  getAllRestaurants,
-  getAllRestaurantsWithDirections,
-} from "~/utils/supabase"
+import { getAllRestaurants } from "~/utils/supabase"
 
 import styles from "~/styles/random.css"
 import {
@@ -23,38 +20,102 @@ import {
   ORIGIN,
 } from "~/utils/google"
 import { isXSmall } from "~/utils/mediaQuery"
+import type { LoaderFunction } from "@remix-run/node"
+import type { PostgrestError } from "@supabase/supabase-js"
 
 export function links() {
   return [{ rel: "stylesheet", href: styles }]
 }
 
 interface LoaderData {
-  restaurants: Restaurant[] | null
+  restaurant?: Restaurant
+  error?: {
+    message: string
+    originalError: PostgrestError | null
+  }
 }
 
-export const loader = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
   const { data: restaurants, error } = await getAllRestaurants()
 
   if (error) {
-    console.error("Error getting restaurants from Supabase", error.message)
+    return logAndReturnError("Error getting restaurants from Supabase", error)
+  }
+
+  if (!restaurants || restaurants.length === 0) {
+    return logAndReturnError(
+      "No restaurants received from Supabase, hope you brought a lunch box from home"
+    )
+  }
+
+  let restaurantsToRandomize = restaurants
+
+  const { searchParams } = new URL(request.url)
+  if (searchParams.has("maxminutes") || searchParams.has("maxmeter")) {
+    const maxSeconds = searchParams.has("maxminutes")
+      ? parseFloat(searchParams.get("maxminutes")!) * 60
+      : null
+    const maxMeters = searchParams.has("maxmeter")
+      ? parseFloat(searchParams.get("maxmeter")!)
+      : null
+
+    if (
+      (searchParams.has("maxminutes") && !maxSeconds) ||
+      (searchParams.has("maxmeter") && !maxMeters)
+    ) {
+      return logAndReturnError(
+        `Please provide better parameters, you want to have lunch do you?`
+      )
+    }
+
+    restaurantsToRandomize = restaurantsToRandomize.filter((restaurant) => {
+      const restaurantSeconds =
+        restaurant.directions.routes[0].legs[0].duration!.value
+      const restaurantMeters =
+        restaurant.directions.routes[0].legs[0].distance!.value
+
+      if (maxSeconds && restaurantSeconds > maxSeconds) {
+        return false
+      }
+
+      if (maxMeters && restaurantMeters > maxMeters) {
+        return false
+      }
+
+      return true
+    })
+  }
+
+  const restaurant =
+    restaurantsToRandomize[
+      Math.floor(Math.random() * restaurantsToRandomize.length)
+    ]
+
+  if (!restaurant) {
+    return logAndReturnError(`Snap, no restaurant found, no lunch for you!`)
   }
 
   return {
-    restaurants,
+    restaurant,
+  }
+}
+
+function logAndReturnError(
+  message: string,
+  originalError?: PostgrestError | null
+) {
+  console.error(message)
+
+  return {
+    error: {
+      message,
+      originalError,
+    },
   }
 }
 
 export default function Index() {
-  const { restaurants } = useLoaderData<LoaderData>()
-  const [restaurant, setRestaurant] = useState<Restaurant | undefined>()
-
-  useEffect(() => {
-    if (restaurant || !restaurants) {
-      return
-    }
-
-    setRestaurant(restaurants[Math.floor(Math.random() * restaurants.length)])
-  }, [restaurant, restaurants])
+  const { restaurant, error } = useLoaderData<LoaderData>()
 
   // Uncomment to update directions for all restaurant.
   // PLEASE NOTE: THIS COSTS MONEY FOR GOOGLE CLOUD
@@ -62,8 +123,8 @@ export default function Index() {
   //   getAllRestaurantsWithDirections(ORIGIN)
   // }, [])
 
-  if (!restaurant) {
-    return null
+  if (!restaurant || error) {
+    return <section className="container">{error?.message}</section>
   }
 
   return (
