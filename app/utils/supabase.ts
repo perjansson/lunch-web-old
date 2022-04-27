@@ -80,7 +80,7 @@ async function updateDirectionsForRestaurant(
 
     const { error } = await supabase
       .from<Restaurant>("Restaurant")
-      .update({ directions })
+      .update({ directionsAlternative: directions })
       .eq("id", restaurant.id)
 
     if (error) {

@@ -1,11 +1,14 @@
-import type { Coordinates } from "~/types"
+import type { Coordinates, Restaurant } from "~/types"
 import env from "./environment"
 
 const googleApiKey = env.GOOGLE_API_KEY
 
 export const GOOGLE_MAP_URL = `https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${googleApiKey}`
 
-export const ORIGIN = { lat: 60.44847, lng: 22.26732 }
+export const OFFICE_INNER_COURTYARD = { lat: 60.44847, lng: 22.26732 }
+export const OFFICE_RIVER_SIDE = { lat: 60.44825, lng: 22.26706 }
+
+// 60.44825005805266, 22.267069131121374
 
 export const MAP_SETTINGS = {
   DEFAULT_MAP_OPTIONS: {
@@ -14,7 +17,6 @@ export const MAP_SETTINGS = {
     fullscreenControl: false,
     streetViewControl: false,
   },
-  DEFAULT_CENTER: ORIGIN,
   MARKER_SIZE: 35,
   PIXEL_OFFSET: {
     MARKER: {
@@ -67,4 +69,17 @@ export async function getDirections(
       }
     )
   })
+}
+
+export function getShortestDirectionsInTime(
+  restaurant: Restaurant
+): google.maps.DirectionsResult {
+  const directionValue =
+    restaurant.directions!.routes[0].legs[0].duration!.value
+  const directionAlternativeValue =
+    restaurant.directionsAlternative!.routes[0].legs[0].duration!.value
+
+  return directionValue < directionAlternativeValue
+    ? restaurant.directions
+    : restaurant.directionsAlternative
 }

@@ -10,4 +10,5 @@ export interface Restaurant {
   lat: number
   lng: number
   directions: google.maps.DirectionsResult
+  directionsAlternative: google.maps.DirectionsResult
 }

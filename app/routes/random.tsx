@@ -10,14 +10,19 @@ import {
 import mapStyles from "~/styles/mapStyles.json"
 
 import type { Coordinates, Restaurant } from "~/types"
-import { getAllRestaurants } from "~/utils/supabase"
+import {
+  getAllRestaurants,
+  getAllRestaurantsWithDirections,
+} from "~/utils/supabase"
 
 import styles from "~/styles/random.css"
 import {
   getDirections,
+  getShortestDirectionsInTime,
   GOOGLE_MAP_URL,
   MAP_SETTINGS,
-  ORIGIN,
+  OFFICE_INNER_COURTYARD,
+  OFFICE_RIVER_SIDE,
 } from "~/utils/google"
 import { isXSmall } from "~/utils/mediaQuery"
 import type { LoaderFunction } from "@remix-run/node"
@@ -69,10 +74,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
 
     restaurantsToRandomize = restaurantsToRandomize.filter((restaurant) => {
+      const shortestDirections = getShortestDirectionsInTime(restaurant)
       const restaurantSeconds =
-        restaurant.directions.routes[0].legs[0].duration!.value
+        shortestDirections.routes[0].legs[0].duration!.value
       const restaurantMeters =
-        restaurant.directions.routes[0].legs[0].distance!.value
+        shortestDirections.routes[0].legs[0].distance!.value
 
       if (maxSeconds && restaurantSeconds > maxSeconds) {
         return false
@@ -120,12 +126,14 @@ export default function Index() {
   // Uncomment to update directions for all restaurant.
   // PLEASE NOTE: THIS COSTS MONEY FOR GOOGLE CLOUD
   // useEffect(() => {
-  //   getAllRestaurantsWithDirections(ORIGIN)
+  //   getAllRestaurantsWithDirections(OFFICE_RIVER_SIDE)
   // }, [])
 
   if (!restaurant || error) {
     return <section className="container">{error?.message}</section>
   }
+
+  const shortestDirections = getShortestDirectionsInTime(restaurant)
 
   return (
     <section className="container">
@@ -141,7 +149,7 @@ export default function Index() {
               className="icon"
               alt="Distance to location"
             />
-            <div>{restaurant.directions?.routes[0].legs[0].distance?.text}</div>
+            <div>{shortestDirections.routes[0].legs[0].distance?.text}</div>
           </div>
           <div>
             <img
@@ -149,11 +157,11 @@ export default function Index() {
               className="icon"
               alt="Distance to location"
             />
-            <div>{restaurant.directions?.routes[0].legs[0].duration?.text}</div>
-          </div>{" "}
+            <div>{shortestDirections.routes[0].legs[0].duration?.text}</div>
+          </div>
         </Info>
         <Map
-          origin={ORIGIN}
+          origin={shortestDirections.request.origin.location}
           destination={restaurant}
           fetchFreshDirection={!restaurant.directions}
           googleMapURL={GOOGLE_MAP_URL}
@@ -181,7 +189,9 @@ const Map = withScriptjs(
     }) => {
       const mapRef = useRef(null)
       const [directions, setDirections] =
-        useState<google.maps.DirectionsResult>(destination.directions)
+        useState<google.maps.DirectionsResult>(
+          getShortestDirectionsInTime(destination)
+        )
 
       useEffect(() => {
         if (!origin || !destination || !fetchFreshDirection) {
