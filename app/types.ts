@@ -15,6 +15,13 @@ export interface Restaurant {
   directionsAlternative: google.maps.DirectionsResult
 }
 
+export interface Reservation {
+  id: number
+  restaurantId: number
+  when: string // ISO date format
+  Restaurant?: Restaurant
+}
+
 export interface Error {
   message: string
   originalError: PostgrestError | null

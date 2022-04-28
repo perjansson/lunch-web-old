@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
-import type { Coordinates, Restaurant } from "~/types"
+import { addDays } from "date-fns"
+import type { Coordinates, Reservation, Restaurant } from "~/types"
 import env from "./environment"
 import { getCoordinatesForAddress, getDirections } from "./google"
 
@@ -14,10 +15,15 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-export default supabase
-
 export function getAllRestaurants() {
   return supabase.from<Restaurant>("Restaurant").select("*")
+}
+
+export function getReservationById(restaurantId: string) {
+  return supabase
+    .from<Restaurant>("Restaurant")
+    .select("*")
+    .eq("id", restaurantId)
 }
 
 // NOTE: This costs money in Google Cloud per transaction to do
@@ -91,6 +97,47 @@ async function updateDirectionsForRestaurant(
   } catch (error: any) {
     console.error(
       `Error getting direction from Google for ${restaurant.name}: ${error.message}`
+    )
+  }
+}
+
+export function getAllReservations(notReservedLastDays?: number) {
+  let query = supabase.from<Reservation>("Reservation").select("*")
+
+  if (notReservedLastDays) {
+    const date = addDays(new Date(), -notReservedLastDays)
+    query.gt("when", date.toISOString())
+  }
+
+  return query
+}
+
+export async function getReservationAt(when: Date) {
+  const { data: reservation } = await supabase
+    .from<Reservation>("Reservation")
+    .select(
+      `
+        *,
+        Restaurant (
+          *
+        )
+      `
+    )
+    .eq("when", when.toISOString())
+
+  return reservation ? reservation[0] : null
+}
+
+export async function createReservationAt(restaurant: Restaurant, when: Date) {
+  const { error } = await supabase
+    .from<Reservation>("Reservation")
+    .insert([{ restaurantId: restaurant.id, when: when.toISOString() }])
+
+  if (error) {
+    console.error(
+      `Error creating reservation to Supabase for ${
+        restaurant.name
+      } at ${when.toISOString()}: ${error.message}`
     )
   }
 }

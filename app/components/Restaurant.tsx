@@ -7,7 +7,8 @@ import {
   DirectionsRenderer,
 } from "react-google-maps"
 
-import type { Coordinates, Restaurant } from "~/types"
+import type { Restaurant as RestaurantType } from "~/types"
+import type { Coordinates } from "~/types"
 import { isXSmall } from "~/utils/mediaQuery"
 import {
   getDirections,
@@ -23,7 +24,7 @@ export function links() {
   return [{ rel: "stylesheet", href: styles }]
 }
 
-export const Reastaurant: React.FC<{ restaurant: Restaurant }> = ({
+export const Restaurant: React.FC<{ restaurant: RestaurantType }> = ({
   restaurant,
 }) => {
   const shortestDirections = getShortestDirectionsInTime(restaurant)
@@ -71,7 +72,7 @@ const Map = withScriptjs(
       fetchFreshDirection,
     }: {
       origin: Coordinates
-      destination: Restaurant
+      destination: RestaurantType
       fetchFreshDirection?: boolean
     }) => {
       const mapRef = useRef(null)

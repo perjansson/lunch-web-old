@@ -25,38 +25,42 @@
   margin: 16px 0 8px 0;
 }
 
+.preTitle {
+  color: gray
+}
+
 .title {
-  font-size: 156px;
+  font-size: 128px;
   line-height: 0.9;
-  margin-bottom: 8px;
+  margin: 24px 0 8px 0;
 }
 
   
 /* X-Large devices (large desktops, less than 1400px) */
 @media (max-width: 1399.98px) {
   .title {
-    font-size: 148px;
+    font-size: 116px;
   }
 }
 
 /* Large devices (desktops, less than 1200px) */
 @media (max-width: 1199.98px) {
   .title {
-    font-size: 128px;
+    font-size: 100px;
   }
 }
 
 /* Small devices (landscape phones, less than 768px) */
 @media (max-width: 767.98px) {
   .title {
-    font-size: 112px;
+    font-size: 88px;
   }
 }
 
 /* Medium devices (tablets, less than 992px) */
 @media (max-width: 991.98px) {
   .title {
-    font-size: 88px;
+    font-size: 64px;
   }
 }
 
