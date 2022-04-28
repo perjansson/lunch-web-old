@@ -1,0 +1,36 @@
+.restaurantLink {
+  margin: 8px auto 0 auto;
+  display: grid;
+  grid-template-columns: 240px 160px 160px;
+  text-align: end;
+  font-size: 18px;
+}
+
+.restaurantLink.header {
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.restaurantLink.header a {
+  color: black
+}
+
+.restaurantLink.header a.sorted {
+  font-weight: bold;
+}
+
+.restaurantName {
+  text-align: start;
+}
+
+/* X-Small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+  .restaurantLink {
+    grid-template-columns: 120px 80px 80px;    
+    font-size: 10px;
+  }
+
+  .restaurantLink.header {
+    font-size: 12px;
+  }
+}

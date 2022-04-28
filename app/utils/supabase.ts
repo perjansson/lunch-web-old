@@ -19,11 +19,12 @@ export function getAllRestaurants() {
   return supabase.from<Restaurant>("Restaurant").select("*")
 }
 
-export function getReservationById(restaurantId: string) {
+export function getRestaurantById(restaurantId: string) {
   return supabase
     .from<Restaurant>("Restaurant")
     .select("*")
     .eq("id", restaurantId)
+    .single()
 }
 
 // NOTE: This costs money in Google Cloud per transaction to do
@@ -124,8 +125,9 @@ export async function getReservationAt(when: Date) {
       `
     )
     .eq("when", when.toISOString())
+    .single()
 
-  return reservation ? reservation[0] : null
+  return reservation
 }
 
 export async function createReservationAt(restaurant: Restaurant, when: Date) {

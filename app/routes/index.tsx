@@ -30,6 +30,7 @@ interface LoaderData extends RandomRestaurantLoaderData {
 
 const pages: PageType[] = [
   { url: "/random", title: "Check out another random restaurant?" },
+  { url: "/list", title: "List all restaurants available?" },
 ]
 
 export const loader: LoaderFunction = async (
@@ -59,7 +60,7 @@ export const loader: LoaderFunction = async (
   }
 }
 
-export default function Random() {
+export default function Index() {
   const { reservation, restaurant, error } = useLoaderData<LoaderData>()
 
   // Uncomment to update directions for all restaurant.

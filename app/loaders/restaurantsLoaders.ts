@@ -90,8 +90,6 @@ async function getRestaurantsToRandomize(
     ? (await getAllReservations(notReservedLastDays)).data ?? []
     : []
 
-  console.log("### reservations", reservations)
-
   return restaurants
     .filter((restaurant) => {
       const shortestDirections = getShortestDirectionsInTime(restaurant)
