@@ -1,43 +1,23 @@
 import { useLoaderData } from "@remix-run/react"
-import { useEffect, useRef, useState } from "react"
-import {
-  Marker,
-  GoogleMap,
-  withScriptjs,
-  withGoogleMap,
-  DirectionsRenderer,
-} from "react-google-maps"
-import mapStyles from "~/styles/mapStyles.json"
-
-import type { Coordinates, Restaurant } from "~/types"
-import {
-  getAllRestaurants,
-  getAllRestaurantsWithDirections,
-} from "~/utils/supabase"
-
-import styles from "~/styles/random.css"
-import {
-  getDirections,
-  getShortestDirectionsInTime,
-  GOOGLE_MAP_URL,
-  MAP_SETTINGS,
-  OFFICE_INNER_COURTYARD,
-  OFFICE_RIVER_SIDE,
-} from "~/utils/google"
-import { isXSmall } from "~/utils/mediaQuery"
 import type { LoaderFunction } from "@remix-run/node"
-import type { PostgrestError } from "@supabase/supabase-js"
+import type { Error, Restaurant } from "~/types"
+import { getAllRestaurants } from "~/utils/supabase"
 
-export function links() {
-  return [{ rel: "stylesheet", href: styles }]
-}
+import { getShortestDirectionsInTime } from "~/utils/google"
+import { Reastaurant, links as restaurantLinks } from "~/components/Restaurant"
+import { logAndReturnError } from "~/utils/log"
+import { Page, links as pageLinks } from "~/components/Page"
+
+const MAX_MINUTES_PARAM = "maxminutes"
+const MAX_METERS_PARAM = "maxmeters"
 
 interface LoaderData {
   restaurant?: Restaurant
-  error?: {
-    message: string
-    originalError: PostgrestError | null
-  }
+  error?: Error
+}
+
+export function links() {
+  return [...restaurantLinks(), ...pageLinks()]
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -53,71 +33,72 @@ export const loader: LoaderFunction = async ({ request }) => {
     )
   }
 
-  let restaurantsToRandomize = restaurants
-
   const { searchParams } = new URL(request.url)
-  if (searchParams.has("maxminutes") || searchParams.has("maxmeter")) {
-    const maxSeconds = searchParams.has("maxminutes")
-      ? parseFloat(searchParams.get("maxminutes")!) * 60
-      : null
-    const maxMeters = searchParams.has("maxmeter")
-      ? parseFloat(searchParams.get("maxmeter")!)
-      : null
+  const restaurantsToRandomize = getRestaurantsToRandomize(
+    restaurants,
+    searchParams
+  )
 
-    if (
-      (searchParams.has("maxminutes") && !maxSeconds) ||
-      (searchParams.has("maxmeter") && !maxMeters)
-    ) {
-      return logAndReturnError(
-        `Please provide better parameters, you want to have lunch do you?`
-      )
+  try {
+    const restaurant =
+      restaurantsToRandomize[
+        Math.floor(Math.random() * restaurantsToRandomize.length)
+      ]
+
+    if (!restaurant) {
+      return logAndReturnError(`Snap, no restaurant found, no lunch for you!`)
     }
 
-    restaurantsToRandomize = restaurantsToRandomize.filter((restaurant) => {
-      const shortestDirections = getShortestDirectionsInTime(restaurant)
-      const restaurantSeconds =
-        shortestDirections.routes[0].legs[0].duration!.value
-      const restaurantMeters =
-        shortestDirections.routes[0].legs[0].distance!.value
-
-      if (maxSeconds && restaurantSeconds > maxSeconds) {
-        return false
-      }
-
-      if (maxMeters && restaurantMeters > maxMeters) {
-        return false
-      }
-
-      return true
-    })
-  }
-
-  const restaurant =
-    restaurantsToRandomize[
-      Math.floor(Math.random() * restaurantsToRandomize.length)
-    ]
-
-  if (!restaurant) {
-    return logAndReturnError(`Snap, no restaurant found, no lunch for you!`)
-  }
-
-  return {
-    restaurant,
+    return {
+      restaurant,
+    }
+  } catch (error) {
+    return logAndReturnError(error as string)
   }
 }
 
-function logAndReturnError(
-  message: string,
-  originalError?: PostgrestError | null
-) {
-  console.error(message)
-
-  return {
-    error: {
-      message,
-      originalError,
-    },
+function getRestaurantsToRandomize(
+  restaurants: Restaurant[],
+  searchParams: URLSearchParams
+): Restaurant[] {
+  if (
+    !searchParams.has(MAX_MINUTES_PARAM) &&
+    !searchParams.has(MAX_METERS_PARAM)
+  ) {
+    return restaurants
   }
+
+  const maxSeconds = searchParams.has(MAX_MINUTES_PARAM)
+    ? parseFloat(searchParams.get(MAX_MINUTES_PARAM)!) * 60
+    : null
+  const maxMeters = searchParams.has(MAX_METERS_PARAM)
+    ? parseFloat(searchParams.get(MAX_METERS_PARAM)!)
+    : null
+
+  if (
+    (searchParams.has(MAX_MINUTES_PARAM) && !maxSeconds) ||
+    (searchParams.has(MAX_METERS_PARAM) && !maxMeters)
+  ) {
+    throw `Please provide better parameters, you want to have lunch do you?`
+  }
+
+  return restaurants.filter((restaurant) => {
+    const shortestDirections = getShortestDirectionsInTime(restaurant)
+    const restaurantSeconds =
+      shortestDirections.routes[0].legs[0].duration!.value
+    const restaurantMeters =
+      shortestDirections.routes[0].legs[0].distance!.value
+
+    if (maxSeconds && restaurantSeconds > maxSeconds) {
+      return false
+    }
+
+    if (maxMeters && restaurantMeters > maxMeters) {
+      return false
+    }
+
+    return true
+  })
 }
 
 export default function Index() {
@@ -133,105 +114,12 @@ export default function Index() {
     return <section className="container">{error?.message}</section>
   }
 
-  const shortestDirections = getShortestDirectionsInTime(restaurant)
-
   return (
-    <section className="container">
-      <header className="header">
-        <h1 className="title">{restaurant.name}</h1>
-        <address>{restaurant.address}</address>
-      </header>
-      <div className="mapContainer">
-        <Info>
-          <div>
-            <img
-              src="/icons/map-location.png"
-              className="icon"
-              alt="Distance to location"
-            />
-            <div>{shortestDirections.routes[0].legs[0].distance?.text}</div>
-          </div>
-          <div>
-            <img
-              src="/icons/clock.png"
-              className="icon"
-              alt="Distance to location"
-            />
-            <div>{shortestDirections.routes[0].legs[0].duration?.text}</div>
-          </div>
-        </Info>
-        <Map
-          origin={shortestDirections.request.origin.location}
-          destination={restaurant}
-          fetchFreshDirection={!restaurant.directions}
-          googleMapURL={GOOGLE_MAP_URL}
-          loadingElement={<div className="map" />}
-          containerElement={<div className="map" />}
-          mapElement={<div className="map" />}
-        />
-      </div>
-    </section>
+    <Page
+      title={restaurant.name}
+      subTitle={<address>{restaurant.address}</address>}
+    >
+      <Reastaurant restaurant={restaurant} />
+    </Page>
   )
 }
-
-const Info: React.FC = ({ children }) => <div className="info">{children}</div>
-
-const Map = withScriptjs(
-  withGoogleMap(
-    ({
-      origin,
-      destination,
-      fetchFreshDirection,
-    }: {
-      origin: Coordinates
-      destination: Restaurant
-      fetchFreshDirection?: boolean
-    }) => {
-      const mapRef = useRef(null)
-      const [directions, setDirections] =
-        useState<google.maps.DirectionsResult>(
-          getShortestDirectionsInTime(destination)
-        )
-
-      useEffect(() => {
-        if (!origin || !destination || !fetchFreshDirection) {
-          return
-        }
-
-        const fetchDirections = async () => {
-          try {
-            setDirections(await getDirections(origin, destination))
-          } catch (error) {
-            console.error("Error getting directions from Google Maps", error)
-          }
-        }
-
-        fetchDirections()
-      }, [origin, destination, fetchFreshDirection])
-
-      const center = {
-        lat: origin.lat + (destination.lat - origin.lat) / 2,
-        lng: origin.lng + (destination.lng - origin.lng) / 2,
-      }
-
-      return (
-        <GoogleMap
-          ref={mapRef}
-          defaultZoom={isXSmall() ? 13 : 15}
-          defaultCenter={center}
-          defaultOptions={{
-            ...MAP_SETTINGS.DEFAULT_MAP_OPTIONS,
-            styles: mapStyles,
-          }}
-        >
-          <Marker position={origin} />
-          <Marker position={destination} />
-          <DirectionsRenderer
-            directions={directions}
-            options={MAP_SETTINGS.DIRECTIONS_OPTIONS}
-          />
-        </GoogleMap>
-      )
-    }
-  )
-)

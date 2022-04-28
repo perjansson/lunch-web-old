@@ -1,0 +1,58 @@
+.mapContainer {
+  position: relative;
+  height: 60vh;
+  width: 100%;
+  margin-bottom: 100px;
+}
+
+.info {
+  font-size: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  padding: 8px 16px;
+  background-color: rgba(102, 102, 102, 0.35);
+  border-radius: 8px;
+}
+
+.info > * {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  width: 36px;
+  height: 36px;
+}
+
+.map {
+  height: 100%;
+  width: 100%;
+}
+
+/* X-Small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+  .info {
+    top: 8px;
+    right: 8px;
+    font-size: 14px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .mapContainer {
+    height: 60vh;
+    width: 100%;
+  }
+}
