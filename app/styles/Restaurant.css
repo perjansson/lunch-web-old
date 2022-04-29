@@ -2,7 +2,6 @@
   position: relative;
   height: 60vh;
   width: 100%;
-  margin-bottom: 100px;
 }
 
 .info {
@@ -52,7 +51,7 @@
   }
 
   .mapContainer {
-    height: 60vh;
+    height: 125vw;
     width: 100%;
   }
 }

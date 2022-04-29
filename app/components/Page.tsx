@@ -13,7 +13,7 @@ export const Page: React.FC<{
   return (
     <main className="container">
       <header className="header">
-        <h2 className="preTitle">{preTitle}</h2>
+        <div className="preTitle">{preTitle}</div>
         <h1 className="title">{title}</h1>
         {subTitle}
       </header>
