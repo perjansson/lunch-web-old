@@ -1,0 +1,28 @@
+.recommendation {
+  margin: 8px auto 0 auto;
+  display: grid;
+  grid-template-columns: 160px 240px 160px;
+  font-size: 18px;
+  text-align: start;
+}
+
+.recommendation.header {
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.recommendation .participate {
+  text-align: end;
+}
+
+/* X-Small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+  .recommendation {
+    grid-template-columns: 120px 80px 80px;    
+    font-size: 10px;
+  }
+
+  .recommendation.header {
+    font-size: 12px;
+  }
+}

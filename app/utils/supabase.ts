@@ -103,7 +103,14 @@ async function updateDirectionsForRestaurant(
 }
 
 export function getAllReservations(notReservedLastDays?: number) {
-  let query = supabase.from<Reservation>("Reservation").select("*")
+  let query = supabase.from<Reservation>("Reservation").select(
+    `
+      *,
+      Restaurant (
+        *
+      )
+    `
+  )
 
   if (notReservedLastDays) {
     const date = addDays(new Date(), -notReservedLastDays)

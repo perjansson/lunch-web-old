@@ -29,8 +29,9 @@ interface LoaderData extends RandomRestaurantLoaderData {
 }
 
 const pages: PageType[] = [
-  { url: "/random", title: "Check out another random restaurant?" },
-  { url: "/list", title: "List all restaurants available?" },
+  { url: "random", title: "Check out another random restaurant?" },
+  { url: "list", title: "List all restaurants available?" },
+  { url: "day-history", title: "View the recommendation history?" },
 ]
 
 export const loader: LoaderFunction = async (
@@ -98,7 +99,7 @@ export default function Index() {
           <p className="links">
             Was this not a great choice?{" "}
             {pages.map((page) => (
-              <Link key={page.url} to={page.url}>
+              <Link key={page.url} to={`/${page.url}`}>
                 {page.title}
               </Link>
             ))}
