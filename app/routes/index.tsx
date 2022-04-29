@@ -6,10 +6,10 @@ import type { RandomRestaurantLoaderData } from "~/loaders/restaurantsLoaders"
 import { randomRestaurantLoader } from "~/loaders/restaurantsLoaders"
 import styles from "~/styles/index.css"
 import type { LoaderFunction } from "@remix-run/node"
-import { createReservationAt, getReservationAt } from "~/utils/supabase"
-import type { Reservation } from "~/types"
+import { createRecommendationAt, getRecommendationAt } from "~/utils/supabase"
+import type { Recommendation } from "~/types"
 
-const DEFAULT_NUMBER_OF_DAYS_BEFORE_POSSIBLE_TO_RESERVE_AGAIN = 14
+const NUMBER_OF_DAYS_BEFORE_POSSIBLE_TO_RECOMMEND_AGAIN = 14
 
 export function links() {
   return [
@@ -25,7 +25,7 @@ interface PageType {
 }
 
 interface LoaderData extends RandomRestaurantLoaderData {
-  reservation?: Reservation
+  recommendation?: Recommendation
 }
 
 const pages: PageType[] = [
@@ -37,23 +37,22 @@ const pages: PageType[] = [
 export const loader: LoaderFunction = async (
   dataFunctionArgs
 ): Promise<LoaderData> => {
-  const reservation = await getReservationAt(new Date())
+  const recommendation = await getRecommendationAt(new Date())
 
-  if (reservation?.Restaurant) {
+  if (recommendation?.Restaurant) {
     return {
-      reservation,
+      recommendation,
     }
   }
 
   const randomRestaurantResponse = await randomRestaurantLoader({
     ...dataFunctionArgs,
-    notReservedLastDays:
-      DEFAULT_NUMBER_OF_DAYS_BEFORE_POSSIBLE_TO_RESERVE_AGAIN,
+    notRecommendedLastDays: NUMBER_OF_DAYS_BEFORE_POSSIBLE_TO_RECOMMEND_AGAIN,
   })
 
   const { restaurant } = randomRestaurantResponse
   if (restaurant) {
-    createReservationAt(restaurant, new Date())
+    createRecommendationAt(restaurant, new Date())
   }
 
   return {
@@ -62,7 +61,7 @@ export const loader: LoaderFunction = async (
 }
 
 export default function Index() {
-  const { reservation, restaurant, error } = useLoaderData<LoaderData>()
+  const { recommendation, restaurant, error } = useLoaderData<LoaderData>()
 
   // Uncomment to update directions for all restaurant.
   // PLEASE NOTE: THIS COSTS MONEY FOR GOOGLE CLOUD
@@ -74,7 +73,7 @@ export default function Index() {
     return <section className="container">{error?.message}</section>
   }
 
-  const restaurantOfTheDay = reservation?.Restaurant ?? restaurant
+  const restaurantOfTheDay = recommendation?.Restaurant ?? restaurant
 
   if (!restaurantOfTheDay) {
     return (

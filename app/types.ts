@@ -15,7 +15,7 @@ export interface Restaurant {
   directionsAlternative: google.maps.DirectionsResult
 }
 
-export interface Reservation {
+export interface Recommendation {
   id: number
   restaurantId: number
   when: string // ISO date format

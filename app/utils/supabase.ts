@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js"
 import { addDays } from "date-fns"
-import type { Coordinates, Reservation, Restaurant } from "~/types"
+import type { Coordinates, Recommendation, Restaurant } from "~/types"
 import env from "./environment"
 import { getCoordinatesForAddress, getDirections } from "./google"
 
@@ -102,8 +102,8 @@ async function updateDirectionsForRestaurant(
   }
 }
 
-export function getAllReservations(notReservedLastDays?: number) {
-  let query = supabase.from<Reservation>("Reservation").select(
+export function getAllRecommendations(notRecommendedLastDays?: number) {
+  let query = supabase.from<Recommendation>("Recommendation").select(
     `
       *,
       Restaurant (
@@ -112,17 +112,17 @@ export function getAllReservations(notReservedLastDays?: number) {
     `
   )
 
-  if (notReservedLastDays) {
-    const date = addDays(new Date(), -notReservedLastDays)
+  if (notRecommendedLastDays) {
+    const date = addDays(new Date(), -notRecommendedLastDays)
     query.gt("when", date.toISOString())
   }
 
   return query
 }
 
-export async function getReservationAt(when: Date) {
-  const { data: reservation } = await supabase
-    .from<Reservation>("Reservation")
+export async function getRecommendationAt(when: Date) {
+  const { data: recommendation } = await supabase
+    .from<Recommendation>("Recommendation")
     .select(
       `
         *,
@@ -134,17 +134,20 @@ export async function getReservationAt(when: Date) {
     .eq("when", when.toISOString())
     .single()
 
-  return reservation
+  return recommendation
 }
 
-export async function createReservationAt(restaurant: Restaurant, when: Date) {
+export async function createRecommendationAt(
+  restaurant: Restaurant,
+  when: Date
+) {
   const { error } = await supabase
-    .from<Reservation>("Reservation")
+    .from<Recommendation>("Recommendation")
     .insert([{ restaurantId: restaurant.id, when: when.toISOString() }])
 
   if (error) {
     console.error(
-      `Error creating reservation to Supabase for ${
+      `Error creating recommendation to Supabase for ${
         restaurant.name
       } at ${when.toISOString()}: ${error.message}`
     )

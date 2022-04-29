@@ -9,14 +9,14 @@ interface LoaderData {
 export const action: ActionFunction = async (
   dataFunctionArgs
 ): Promise<LoaderData> => {
-  const { reservation } = await indexLoader(dataFunctionArgs)
+  const { recommendation } = await indexLoader(dataFunctionArgs)
 
-  if (!reservation) {
+  if (!recommendation) {
     return { text: "Snap, something went wrong!" }
   }
 
   return {
     response_type: "in_channel",
-    text: `Today's recommendation is: ${reservation.Restaurant.name}. Check it out at https://lunch-web.fly.dev. Bon appetit! :chefs-kiss:`,
+    text: `Today's recommendation is: ${recommendation.Restaurant.name}. Check it out at https://lunch-web.fly.dev. Bon appetit! :chefs-kiss:`,
   }
 }

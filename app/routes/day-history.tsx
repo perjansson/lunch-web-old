@@ -3,8 +3,8 @@ import { Link, useLoaderData } from "@remix-run/react"
 import { Page, links as pageLinks } from "~/components/Page"
 import styles from "~/styles/day-history.css"
 import type { LoaderFunction } from "@remix-run/node"
-import { getAllReservations } from "~/utils/supabase"
-import type { Reservation } from "~/types"
+import { getAllRecommendations } from "~/utils/supabase"
+import type { Recommendation } from "~/types"
 import type { Error } from "~/types"
 import { logAndReturnError } from "~/utils/log"
 import { parseISO } from "date-fns"
@@ -14,28 +14,28 @@ export function links() {
 }
 
 interface LoaderData {
-  reservations?: Reservation[]
+  recommendations?: Recommendation[]
   error?: Error
 }
 
 export const loader: LoaderFunction = async (): Promise<LoaderData> => {
-  const { data: reservations, error } = await getAllReservations()
+  const { data: recommendations, error } = await getAllRecommendations()
 
   if (error) {
     return logAndReturnError("Error getting restaurants from Supabase", error)
   }
 
-  return { reservations: reservations.sort(sortByWhen) }
+  return { recommendations: recommendations.sort(sortByWhen) }
 }
 
 export default function DayHistory() {
-  const { reservations, error } = useLoaderData<LoaderData>()
+  const { recommendations, error } = useLoaderData<LoaderData>()
 
   if (error) {
     return <section className="container">{error?.message}</section>
   }
 
-  if (!reservations) {
+  if (!recommendations) {
     return null
   }
 
@@ -47,15 +47,15 @@ export default function DayHistory() {
           <div>Restaurant</div>
           <div className="participate">Did you join?</div>
         </div>
-        {reservations?.map((reservation) => {
+        {recommendations?.map((recommendation) => {
           return (
-            <div key={reservation.id} className="recommendation">
-              <div>{reservation.when}</div>
+            <div key={recommendation.id} className="recommendation">
+              <div>{recommendation.when}</div>
               <Link
-                to={`/restaurant/${reservation.Restaurant?.id}`}
+                to={`/restaurant/${recommendation.Restaurant?.id}`}
                 className="restaurantName"
               >
-                {reservation.Restaurant?.name}
+                {recommendation.Restaurant?.name}
               </Link>
               <div className="participate"></div>
             </div>
@@ -67,11 +67,11 @@ export default function DayHistory() {
 }
 
 function sortByWhen(
-  reservationA: Reservation,
-  reservationB: Reservation
+  recommendationA: Recommendation,
+  recommendationB: Recommendation
 ): number {
-  const a = parseISO(reservationA.when)
-  const b = parseISO(reservationB.when)
+  const a = parseISO(recommendationA.when)
+  const b = parseISO(recommendationB.when)
 
   return b.getTime() - a.getTime()
 }

@@ -1,7 +1,7 @@
 import type { DataFunctionArgs } from "@remix-run/node"
 import type { Error, Restaurant } from "~/types"
 import { logAndReturnError } from "~/utils/log"
-import { getAllReservations, getAllRestaurants } from "~/utils/supabase"
+import { getAllRecommendations, getAllRestaurants } from "~/utils/supabase"
 import { getShortestDirectionsInTime } from "../utils/google"
 
 const MAX_MINUTES_PARAM = "maxminutes"
@@ -13,14 +13,14 @@ export interface RandomRestaurantLoaderData {
 }
 
 interface Args extends DataFunctionArgs {
-  notReservedLastDays?: number
+  notRecommendedLastDays?: number
 }
 
 export const randomRestaurantLoader: (
   args: Args
 ) => Promise<RandomRestaurantLoaderData> = async ({
   request,
-  notReservedLastDays,
+  notRecommendedLastDays,
 }) => {
   const { data: restaurants, error } = await getAllRestaurants()
 
@@ -38,7 +38,7 @@ export const randomRestaurantLoader: (
   const restaurantsToRandomize = await getRestaurantsToRandomize(
     restaurants,
     searchParams,
-    notReservedLastDays
+    notRecommendedLastDays
   )
 
   try {
@@ -62,12 +62,12 @@ export const randomRestaurantLoader: (
 async function getRestaurantsToRandomize(
   restaurants: Restaurant[],
   searchParams: URLSearchParams,
-  notReservedLastDays?: number
+  notRecommendedLastDays?: number
 ): Promise<Restaurant[]> {
   if (
     !searchParams.has(MAX_MINUTES_PARAM) &&
     !searchParams.has(MAX_METERS_PARAM) &&
-    !notReservedLastDays
+    !notRecommendedLastDays
   ) {
     return restaurants
   }
@@ -86,8 +86,8 @@ async function getRestaurantsToRandomize(
     throw `Please provide better parameters, you want to have lunch do you?`
   }
 
-  const reservations = notReservedLastDays
-    ? (await getAllReservations(notReservedLastDays)).data ?? []
+  const recommendations = notRecommendedLastDays
+    ? (await getAllRecommendations(notRecommendedLastDays)).data ?? []
     : []
 
   return restaurants
@@ -110,8 +110,8 @@ async function getRestaurantsToRandomize(
     })
     .filter(
       (restaurant) =>
-        !reservations.find(
-          (reservation) => reservation.restaurantId === restaurant.id
+        !recommendations.find(
+          ({ restaurantId }) => restaurantId === restaurant.id
         )
     )
 }
