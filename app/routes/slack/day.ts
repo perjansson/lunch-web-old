@@ -1,4 +1,5 @@
 import type { ActionFunction } from "@remix-run/node"
+import { getShortestDirectionsInTime } from "~/utils/google"
 import { loader as indexLoader } from "../index"
 
 interface LoaderData {
@@ -11,12 +12,16 @@ export const action: ActionFunction = async (
 ): Promise<LoaderData> => {
   const { recommendation } = await indexLoader(dataFunctionArgs)
 
-  if (!recommendation) {
+  if (!recommendation || !recommendation.Restaurant) {
     return { text: "Snap, something went wrong!" }
   }
 
+  const restaurant = recommendation.Restaurant
+  const directions = getShortestDirectionsInTime(restaurant)
+
   return {
     response_type: "in_channel",
-    text: `Today's recommendation is: ${recommendation.Restaurant.name}. Check it out at https://lunch-web.fly.dev. Bon appetit! :chefs-kiss:`,
+    text: `Today's lunch recommendation is *${restaurant.name}* on ${restaurant.address}.\n
+It takes ${directions.routes[0].legs[0].duration?.text} to walk the ${directions.routes[0].legs[0].distance?.text} to the restaurant. Check out map directions at https://lunch-web.fly.dev. Bon appetit! :chefs-kiss:`,
   }
 }

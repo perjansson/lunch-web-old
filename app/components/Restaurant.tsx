@@ -16,7 +16,7 @@ import {
   GOOGLE_MAP_URL,
   MAP_SETTINGS,
 } from "~/utils/google"
-import styles from "~/styles/restaurant.css"
+import styles from "~/styles/Restaurant.css"
 
 import mapStyles from "~/styles/mapStyles.json"
 
