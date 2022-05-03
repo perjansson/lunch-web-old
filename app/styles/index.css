@@ -1,6 +1,6 @@
 .links {
   margin: 24px 0;
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .links a {
@@ -10,6 +10,6 @@
 /* X-Small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) {
   .links {
-    font-size: 14px;
+    font-size: 12px;
   }
 }

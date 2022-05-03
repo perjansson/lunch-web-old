@@ -15,7 +15,7 @@ export const Page: React.FC<{
       <header className="header">
         <div className="preTitle">{preTitle}</div>
         <h1 className="title">{title}</h1>
-        {subTitle}
+        <div className="subTitle">{subTitle}</div>
       </header>
       {children}
     </main>

@@ -26,6 +26,10 @@ export function links() {
       href: "https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap",
     },
     {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Radio+Canada:wght@300;400;500;700&display=swap",
+    },
+    {
       rel: "manifest",
       href: "/site.webmanifest",
     },
