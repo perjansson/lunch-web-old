@@ -58,7 +58,8 @@ export const loader: LoaderFunction = async (
 
   const randomRestaurantResponse = await randomRestaurantLoader({
     ...dataFunctionArgs,
-    notRecommendedLastDays: NUMBER_OF_DAYS_BEFORE_POSSIBLE_TO_RECOMMEND_AGAIN,
+    sinceWhen: NUMBER_OF_DAYS_BEFORE_POSSIBLE_TO_RECOMMEND_AGAIN,
+    hasLunch: true,
   })
 
   const { restaurant } = randomRestaurantResponse

@@ -58,7 +58,10 @@ export default function List() {
   }
 
   return (
-    <Page title="All restaurants">
+    <Page
+      title="All restaurants"
+      subTitle="Restaurants with a * might not have lunch"
+    >
       <div className="restaurantLink header">
         <button onClick={() => setSortBy("name")} className="restaurantName">
           Name
@@ -78,12 +81,10 @@ export default function List() {
 
         return (
           <div key={restaurant.id} className="restaurantLink">
-            <Link
-              to={`/restaurant/${restaurant.id}`}
-              className="restaurantName"
-            >
-              {restaurant.name}
-            </Link>
+            <div className="restaurantName">
+              <Link to={`/restaurant/${restaurant.id}`}>{restaurant.name}</Link>
+              <span> {!restaurant.hasLunch ? "*" : ""}</span>
+            </div>
             <div>{shortestDirection.distance?.text}</div>
             <div>{shortestDirection.duration?.text}</div>
             <div className="rating">

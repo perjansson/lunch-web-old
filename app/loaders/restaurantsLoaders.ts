@@ -13,16 +13,18 @@ export interface RandomRestaurantLoaderData {
 }
 
 interface Args extends DataFunctionArgs {
-  notRecommendedLastDays?: number
+  sinceWhen?: number
+  hasLunch: true
 }
 
 export const randomRestaurantLoader: (
   args: Args
 ) => Promise<RandomRestaurantLoaderData> = async ({
   request,
-  notRecommendedLastDays,
+  sinceWhen,
+  hasLunch,
 }) => {
-  const { data: restaurants, error } = await getAllRestaurants()
+  const { data: restaurants, error } = await getAllRestaurants({ hasLunch })
 
   if (error) {
     return logAndReturnError("Error getting restaurants from Supabase", error)
@@ -38,7 +40,8 @@ export const randomRestaurantLoader: (
   const restaurantsToRandomize = await getRestaurantsToRandomize(
     restaurants,
     searchParams,
-    notRecommendedLastDays
+    sinceWhen,
+    hasLunch
   )
 
   try {
@@ -62,12 +65,13 @@ export const randomRestaurantLoader: (
 async function getRestaurantsToRandomize(
   restaurants: Restaurant[],
   searchParams: URLSearchParams,
-  notRecommendedLastDays?: number
+  sinceWhen?: number,
+  hasLunch?: boolean
 ): Promise<Restaurant[]> {
   if (
     !searchParams.has(MAX_MINUTES_PARAM) &&
     !searchParams.has(MAX_METERS_PARAM) &&
-    !notRecommendedLastDays
+    !sinceWhen
   ) {
     return restaurants
   }
@@ -86,9 +90,10 @@ async function getRestaurantsToRandomize(
     throw `Please provide better parameters, you want to have lunch do you?`
   }
 
-  const recommendations = notRecommendedLastDays
-    ? (await getAllRecommendations({ notRecommendedLastDays })).data ?? []
-    : []
+  const recommendationsToAvoid =
+    sinceWhen || hasLunch
+      ? (await getAllRecommendations({ sinceWhen })).data ?? []
+      : []
 
   return restaurants
     .filter((restaurant) => {
@@ -110,7 +115,7 @@ async function getRestaurantsToRandomize(
     })
     .filter(
       (restaurant) =>
-        !recommendations.find(
+        !recommendationsToAvoid.find(
           ({ restaurantId }) => restaurantId === restaurant.id
         )
     )

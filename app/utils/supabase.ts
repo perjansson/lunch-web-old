@@ -21,8 +21,9 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey)
 
-export function getAllRestaurants() {
-  return supabase.from<Restaurant>("Restaurant").select(
+export function getAllRestaurants(options?: { hasLunch?: boolean }) {
+  const { hasLunch } = options || {}
+  let query = supabase.from<Restaurant>("Restaurant").select(
     `
     *,
     Recommendation (
@@ -36,6 +37,12 @@ export function getAllRestaurants() {
     )
   `
   )
+
+  if (hasLunch) {
+    query.eq("hasLunch", hasLunch)
+  }
+
+  return query
 }
 
 export function getRestaurantById(restaurantId: string) {
@@ -135,10 +142,10 @@ async function updateDirectionsForRestaurant(
 }
 
 export function getAllRecommendations(options?: {
-  notRecommendedLastDays?: number
+  sinceWhen?: number
   restaurantId?: number
 }) {
-  const { notRecommendedLastDays, restaurantId } = options || {}
+  const { sinceWhen, restaurantId } = options || {}
   let query = supabase.from<Recommendation>("Recommendation").select(
     `
       *,
@@ -151,8 +158,8 @@ export function getAllRecommendations(options?: {
     `
   )
 
-  if (notRecommendedLastDays) {
-    const date = addDays(new Date(), -notRecommendedLastDays)
+  if (sinceWhen) {
+    const date = addDays(new Date(), -sinceWhen)
     query.gt("when", date.toISOString())
   }
 

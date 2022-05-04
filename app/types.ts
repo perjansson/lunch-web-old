@@ -9,6 +9,7 @@ export interface Restaurant {
   id: number
   name: string
   address: string
+  hasLunch: boolean
   lat: number
   lng: number
   directions: google.maps.DirectionsResult

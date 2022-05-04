@@ -16,7 +16,7 @@ import {
   GOOGLE_MAP_URL,
   MAP_SETTINGS,
 } from "~/utils/google"
-import styles from "~/styles/restaurants.css"
+import styles from "~/styles/restaurant.css"
 
 import mapStyles from "~/styles/mapStyles.json"
 import { calculateTotalRating } from "~/utils/ratings"
@@ -35,6 +35,12 @@ export const Restaurant: React.FC<{ restaurant: RestaurantType }> = ({
       <Rating restaurant={restaurant} />
       <div className="mapContainer">
         <Info>
+          {!restaurant.hasLunch && (
+            <div className="warning">
+              <img src="/icons/warning.png" className="icon" alt="Warning" />
+              This restaurant might not have lunch!
+            </div>
+          )}
           <div>
             <img
               src="/icons/map-location.png"
