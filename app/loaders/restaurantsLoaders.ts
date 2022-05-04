@@ -87,7 +87,7 @@ async function getRestaurantsToRandomize(
   }
 
   const recommendations = notRecommendedLastDays
-    ? (await getAllRecommendations(notRecommendedLastDays)).data ?? []
+    ? (await getAllRecommendations({ notRecommendedLastDays })).data ?? []
     : []
 
   return restaurants

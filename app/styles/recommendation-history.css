@@ -1,0 +1,61 @@
+.recommendation {
+  height: 40px;
+  margin: 8px auto 0 auto;
+  display: grid;
+  grid-template-columns: 200px 280px 240px 160px;
+  font-size: 18px;
+}
+
+.recommendation.header {
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.recommendation .date,
+.recommendation .restaurantName {
+  text-align: start;
+}
+
+.star {
+  width: 28px;
+  height: 28px;
+}
+
+.rating {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.rating .text {
+  display: none;
+}
+
+/* X-Small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+  .recommendation {
+    height: 24px;
+    grid-template-columns: 80px 120px 60px 80px;
+    font-size: 10px;
+  }
+
+  .recommendation.header {
+    font-size: 10px;
+  }
+
+  .star {
+    width: 16px;
+    height: 16px;
+  }
+
+  .rating {
+    text-align: left;
+  }
+
+  .rating .star {
+    display: none;
+  }
+
+  .rating .text {
+    display: block;
+  }
+}

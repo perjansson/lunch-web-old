@@ -1,0 +1,69 @@
+.trigger {
+  all: unset;
+  text-decoration: underline;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dialog {
+  font-family: Share Tech Mono, monospace;
+  width: 90vw;
+  max-width: 900px;
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+}
+
+.close-button {
+  all: unset;
+  font-size: 40px;
+  cursor: pointer;
+}
+
+.dialog-body {
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rating-text {
+  min-height: 80px;
+  font-weight: bold;
+  font-size: 18px;
+  text-align: center;
+}
+
+.rating-stars {
+  height: 100px;
+  display: flex;
+}
+
+.rating-stars img {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dialog-footer {
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dialog-footer button {
+  cursor: pointer;
+}
+
+/* X-Small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+  .dialog-header {
+    align-items: flex-start;
+  }
+}

@@ -1,14 +1,14 @@
+import { useEffect, useState } from "react"
 import { Link, useLoaderData } from "@remix-run/react"
+import type { LoaderFunction } from "@remix-run/node"
 
 import { Page, links as pageLinks } from "~/components/Page"
 import styles from "~/styles/list.css"
-import type { LoaderFunction } from "@remix-run/node"
 import { getAllRestaurants } from "~/utils/supabase"
-import type { Restaurant } from "~/types"
-import type { Error } from "~/types"
+import type { Restaurant, Error } from "~/types"
 import { logAndReturnError } from "~/utils/log"
 import { getShortestDirectionsInTime } from "~/utils/google"
-import { useEffect, useState } from "react"
+import { calculateTotalRating } from "~/utils/ratings"
 
 export function links() {
   return [...pageLinks(), { rel: "stylesheet", href: styles }]
@@ -29,7 +29,7 @@ export const loader: LoaderFunction = async (): Promise<LoaderData> => {
   return { restaurants }
 }
 
-type SortType = "name" | "distance" | "duration"
+type SortType = "name" | "distance" | "duration" | "rating"
 
 const SortFnMap: {
   [key in SortType]: (a: Restaurant, b: Restaurant) => number
@@ -37,6 +37,7 @@ const SortFnMap: {
   name: sortByName,
   distance: sortByDistance,
   duration: sortByDuration,
+  rating: sortByRating,
 }
 
 export default function List() {
@@ -45,7 +46,7 @@ export default function List() {
   const [sortBy, setSortBy] = useState<SortType>("name")
 
   useEffect(() => {
-    setSortedRestaurants(restaurants?.sort(SortFnMap[sortBy]))
+    setSortedRestaurants([...(restaurants ?? [])].sort(SortFnMap[sortBy]))
   }, [restaurants, sortBy])
 
   if (error) {
@@ -59,23 +60,21 @@ export default function List() {
   return (
     <Page title="All restaurants">
       <div className="restaurantLink header">
-        <a
-          href="#"
-          onClick={() => setSortBy("name")}
-          className={"restaurantName"}
-        >
+        <button onClick={() => setSortBy("name")} className="restaurantName">
           Name
-        </a>
-        <a href="#" onClick={() => setSortBy("distance")}>
-          Distance
-        </a>
-        <a href="#" onClick={() => setSortBy("duration")}>
-          Walk time
-        </a>
+        </button>
+        <button onClick={() => setSortBy("distance")}>Distance</button>
+        <button onClick={() => setSortBy("duration")}>Walk time</button>
+        <button onClick={() => setSortBy("rating")} className="rating">
+          Rating
+        </button>
       </div>
       {sortedRestaurants?.map((restaurant) => {
         const shortestDirection =
           getShortestDirectionsInTime(restaurant).routes[0].legs[0]
+
+        const { starsComponent, averageRating } =
+          calculateTotalRating(restaurant)
 
         return (
           <div key={restaurant.id} className="restaurantLink">
@@ -87,6 +86,10 @@ export default function List() {
             </Link>
             <div>{shortestDirection.distance?.text}</div>
             <div>{shortestDirection.duration?.text}</div>
+            <div className="rating">
+              <div className="star">{starsComponent}</div>
+              <div className="text">{averageRating}</div>
+            </div>
           </div>
         )
       })}
@@ -98,9 +101,11 @@ function sortByName(a: Restaurant, b: Restaurant): number {
   if (a.name < b.name) {
     return -1
   }
+
   if (a.name > b.name) {
     return 1
   }
+
   return 0
 }
 
@@ -126,4 +131,34 @@ function sortByDuration(
     getShortestDirectionsInTime(restaurantB).routes[0].legs[0].duration?.value
 
   return a! - b!
+}
+
+function sortByRating(
+  restaurantA: Restaurant,
+  restaurantB: Restaurant
+): number {
+  const { averageRating: a } = calculateTotalRating(restaurantA)
+  const { averageRating: b } = calculateTotalRating(restaurantB)
+
+  if (!a && !b) {
+    return 0
+  }
+
+  if (!a && b) {
+    return 1
+  }
+
+  if (a && !b) {
+    return -1
+  }
+
+  if (a! < b!) {
+    return 1
+  }
+
+  if (a! > b!) {
+    return -1
+  }
+
+  return 0
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   Marker,
   GoogleMap,
@@ -16,9 +16,10 @@ import {
   GOOGLE_MAP_URL,
   MAP_SETTINGS,
 } from "~/utils/google"
-import styles from "~/styles/Restaurant.css"
+import styles from "~/styles/restaurants.css"
 
 import mapStyles from "~/styles/mapStyles.json"
+import { calculateTotalRating } from "~/utils/ratings"
 
 export function links() {
   return [{ rel: "stylesheet", href: styles }]
@@ -30,34 +31,51 @@ export const Restaurant: React.FC<{ restaurant: RestaurantType }> = ({
   const shortestDirections = getShortestDirectionsInTime(restaurant)
 
   return (
-    <div className="mapContainer">
-      <Info>
-        <div>
-          <img
-            src="/icons/map-location.png"
-            className="icon"
-            alt="Distance to location"
-          />
-          <div>{shortestDirections.routes[0].legs[0].distance?.text}</div>
-        </div>
-        <div>
-          <img
-            src="/icons/clock.png"
-            className="icon"
-            alt="Distance to location"
-          />
-          <div>{shortestDirections.routes[0].legs[0].duration?.text}</div>
-        </div>
-      </Info>
-      <Map
-        origin={shortestDirections.request.origin.location}
-        destination={restaurant}
-        fetchFreshDirection={!restaurant.directions}
-        googleMapURL={GOOGLE_MAP_URL}
-        loadingElement={<div className="map" />}
-        containerElement={<div className="map" />}
-        mapElement={<div className="map" />}
-      />
+    <>
+      <Rating restaurant={restaurant} />
+      <div className="mapContainer">
+        <Info>
+          <div>
+            <img
+              src="/icons/map-location.png"
+              className="icon"
+              alt="Distance to location"
+            />
+            <div>{shortestDirections.routes[0].legs[0].distance?.text}</div>
+          </div>
+          <div>
+            <img
+              src="/icons/clock.png"
+              className="icon"
+              alt="Distance to location"
+            />
+            <div>{shortestDirections.routes[0].legs[0].duration?.text}</div>
+          </div>
+        </Info>
+        <Map
+          origin={shortestDirections.request.origin.location}
+          destination={restaurant}
+          fetchFreshDirection={!restaurant.directions}
+          googleMapURL={GOOGLE_MAP_URL}
+          loadingElement={<div className="map" />}
+          containerElement={<div className="map" />}
+          mapElement={<div className="map" />}
+        />
+      </div>
+    </>
+  )
+}
+
+const Rating: React.FC<{ restaurant: RestaurantType }> = ({ restaurant }) => {
+  const { text, starsComponent } = useMemo(
+    () => calculateTotalRating(restaurant),
+    [restaurant]
+  )
+
+  return (
+    <div className="rating">
+      <div className="stars">{starsComponent}</div>
+      {text}
     </div>
   )
 }

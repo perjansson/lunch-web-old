@@ -1,8 +1,8 @@
 .restaurantLink {
+  height: 40px;
   margin: 8px auto 0 auto;
   display: grid;
-  grid-template-columns: 240px 160px 160px;
-  text-align: end;
+  grid-template-columns: 280px 160px 160px 240px;
   font-size: 18px;
 }
 
@@ -11,11 +11,21 @@
   font-size: 20px;
 }
 
-.restaurantLink.header a {
-  color: black
+.restaurantLink.header button {
+  all: unset;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
-.restaurantLink.header a.sorted {
+.restaurantLink.header button.restaurantName {
+  text-align: start;
+}
+
+.restaurantLink.header button.rating {
+  text-align: center;
+}
+
+.restaurantLink.header button.sorted {
   font-weight: bold;
 }
 
@@ -23,14 +33,36 @@
   text-align: start;
 }
 
+.rating {
+  display: flex;
+  justify-content: center;
+}
+
+.rating .text {
+  display: none;
+}
+
 /* X-Small devices (portrait phones, less than 576px) */
 @media (max-width: 575.98px) {
   .restaurantLink {
-    grid-template-columns: 120px 80px 80px;    
+    height: 24px;
+    grid-template-columns: 120px 80px 80px 60px;
     font-size: 10px;
   }
 
   .restaurantLink.header {
-    font-size: 12px;
+    font-size: 10px;
+  }
+
+  .rating {
+    text-align: center;
+  }
+
+  .rating .star {
+    display: none;
+  }
+
+  .rating .text {
+    display: block;
   }
 }

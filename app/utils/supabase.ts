@@ -1,6 +1,12 @@
 import { createClient } from "@supabase/supabase-js"
 import { addDays } from "date-fns"
-import type { Coordinates, Recommendation, Restaurant } from "~/types"
+import type {
+  Coordinates,
+  Rating,
+  RatingValue,
+  Recommendation,
+  Restaurant,
+} from "~/types"
 import env from "./environment"
 import { getCoordinatesForAddress, getDirections } from "./google"
 
@@ -16,13 +22,39 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export function getAllRestaurants() {
-  return supabase.from<Restaurant>("Restaurant").select("*")
+  return supabase.from<Restaurant>("Restaurant").select(
+    `
+    *,
+    Recommendation (
+      *,
+      Restaurant (
+        *
+      ),
+      Rating (
+        *
+      )
+    )
+  `
+  )
 }
 
 export function getRestaurantById(restaurantId: string) {
   return supabase
     .from<Restaurant>("Restaurant")
-    .select("*")
+    .select(
+      `
+      *,
+      Recommendation (
+        *,
+        Restaurant (
+          *
+        ),
+        Rating (
+          *
+        )
+      )
+    `
+    )
     .eq("id", restaurantId)
     .single()
 }
@@ -102,11 +134,18 @@ async function updateDirectionsForRestaurant(
   }
 }
 
-export function getAllRecommendations(notRecommendedLastDays?: number) {
+export function getAllRecommendations(options?: {
+  notRecommendedLastDays?: number
+  restaurantId?: number
+}) {
+  const { notRecommendedLastDays, restaurantId } = options || {}
   let query = supabase.from<Recommendation>("Recommendation").select(
     `
       *,
       Restaurant (
+        *
+      ),
+      Rating (
         *
       )
     `
@@ -115,6 +154,10 @@ export function getAllRecommendations(notRecommendedLastDays?: number) {
   if (notRecommendedLastDays) {
     const date = addDays(new Date(), -notRecommendedLastDays)
     query.gt("when", date.toISOString())
+  }
+
+  if (restaurantId) {
+    query.eq("restaurantId", restaurantId)
   }
 
   return query
@@ -127,6 +170,9 @@ export async function getRecommendationAt(when: Date) {
       `
         *,
         Restaurant (
+          *
+        ),
+        Rating (
           *
         )
       `
@@ -150,6 +196,21 @@ export async function createRecommendationAt(
       `Error creating recommendation to Supabase for ${
         restaurant.name
       } at ${when.toISOString()}: ${error.message}`
+    )
+  }
+}
+
+export async function saveRating(
+  recommendation: Recommendation,
+  rating: RatingValue
+) {
+  const { error } = await supabase
+    .from<Rating>("Rating")
+    .insert([{ recommendationId: recommendation.id, rating }])
+
+  if (error) {
+    console.error(
+      `Error creating rating to Supabase for recommendation ${recommendation.id} with rating ${rating}: ${error.message}`
     )
   }
 }

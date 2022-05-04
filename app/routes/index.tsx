@@ -6,7 +6,11 @@ import type { RandomRestaurantLoaderData } from "~/loaders/restaurantsLoaders"
 import { randomRestaurantLoader } from "~/loaders/restaurantsLoaders"
 import styles from "~/styles/index.css"
 import type { LoaderFunction } from "@remix-run/node"
-import { createRecommendationAt, getRecommendationAt } from "~/utils/supabase"
+import {
+  createRecommendationAt,
+  getAllRecommendations,
+  getRecommendationAt,
+} from "~/utils/supabase"
 import type { Recommendation } from "~/types"
 
 const NUMBER_OF_DAYS_BEFORE_POSSIBLE_TO_RECOMMEND_AGAIN = 14
@@ -31,7 +35,7 @@ interface LoaderData extends RandomRestaurantLoaderData {
 const pages: PageType[] = [
   { url: "random", title: "Check out another random restaurant?" },
   { url: "list", title: "List all restaurants available?" },
-  { url: "day-history", title: "View the recommendation history?" },
+  { url: "recommendation-history", title: "View the recommendation history?" },
 ]
 
 export const loader: LoaderFunction = async (
@@ -40,6 +44,13 @@ export const loader: LoaderFunction = async (
   const recommendation = await getRecommendationAt(new Date())
 
   if (recommendation?.Restaurant) {
+    const previousRecommendationsForRestaurant = await getAllRecommendations({
+      restaurantId: recommendation?.Restaurant.id,
+    })
+
+    recommendation.Restaurant.Recommendation =
+      previousRecommendationsForRestaurant.data ?? undefined
+
     return {
       recommendation,
     }
@@ -51,7 +62,7 @@ export const loader: LoaderFunction = async (
   })
 
   const { restaurant } = randomRestaurantResponse
-  if (restaurant) {
+  if (process.env.NODE_ENV === "production" && restaurant) {
     createRecommendationAt(restaurant, new Date())
   }
 
