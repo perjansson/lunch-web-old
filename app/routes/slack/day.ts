@@ -12,8 +12,14 @@ export const action: ActionFunction = async (
 ): Promise<LoaderData> => {
   const { recommendation } = await indexLoader(dataFunctionArgs)
 
+  if (!recommendation) {
+    return { text: "Oh no, there is no lunch recommendation yet for today" }
+  }
+
   if (!recommendation || !recommendation.Restaurant) {
-    return { text: "Snap, something went wrong!" }
+    return {
+      text: "Snap, something went wrong! There was a recommendation but no restaurant. Unexpected!",
+    }
   }
 
   const restaurant = recommendation.Restaurant
