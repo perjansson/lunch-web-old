@@ -28,7 +28,7 @@ interface PageType {
   title: string
 }
 
-interface LoaderData extends RandomRestaurantLoaderData {
+export interface LoaderData extends RandomRestaurantLoaderData {
   recommendation?: Recommendation
 }
 
@@ -64,7 +64,7 @@ export const loader: LoaderFunction = async (
 
   const { restaurant } = randomRestaurantResponse
   if (process.env.NODE_ENV === "production" && restaurant) {
-    createRecommendationAt(restaurant, new Date())
+    await createRecommendationAt(restaurant, new Date())
   }
 
   return {
