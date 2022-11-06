@@ -25,12 +25,14 @@ export function calculateRatingForRecommendation(
   const averageRating = hasAnyRatings
     ? ratingForSpecificRecommendation! / numberOfRatings
     : undefined
+  const roundedAverageRating =
+    averageRating && Math.round(averageRating * 10) / 10
 
   return {
     numberOfRatings,
     totalRating: ratingForSpecificRecommendation,
-    averageRating,
-    ...ratingToText(averageRating),
+    averageRating: roundedAverageRating,
+    ...ratingToText(roundedAverageRating),
   }
 }
 
