@@ -51,7 +51,7 @@ export function calculateTotalRating(restaurant: Restaurant) {
     ? restaurant.Recommendation?.reduce<number | undefined>(
         (ratingForAllRecommendations, { Rating }) => {
           if (!Rating) {
-            return undefined
+            return ratingForAllRecommendations
           }
 
           const ratingForSpecificRecommendation = Rating.reduce<
@@ -65,7 +65,7 @@ export function calculateTotalRating(restaurant: Restaurant) {
           return ratingForSpecificRecommendation
             ? ratingForSpecificRecommendation +
                 (ratingForAllRecommendations ?? 0)
-            : undefined
+            : ratingForAllRecommendations
         },
         undefined
       )
