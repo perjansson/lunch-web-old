@@ -13,7 +13,7 @@ import {
 } from "~/utils/supabase"
 import type { Recommendation } from "~/types"
 
-const NUMBER_OF_DAYS_BEFORE_POSSIBLE_TO_RECOMMEND_AGAIN = 14
+const NUMBER_OF_DAYS_BEFORE_POSSIBLE_TO_RECOMMEND_AGAIN = 28
 
 export function links() {
   return [
