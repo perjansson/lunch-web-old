@@ -60,7 +60,7 @@ export default function List() {
   return (
     <Page
       title="All restaurants"
-      subTitle="Restaurants with a * might not have lunch"
+      subTitle="Restaurants grayed out might not have lunch and are excluded from daily lunches"
     >
       <div className="restaurantLink header">
         <button onClick={() => setSortBy("name")} className="restaurantName">
@@ -80,10 +80,14 @@ export default function List() {
           calculateTotalRating(restaurant)
 
         return (
-          <div key={restaurant.id} className="restaurantLink">
+          <div
+            key={restaurant.id}
+            className={`restaurantLink ${
+              !restaurant.hasLunch ? "noLunch" : ""
+            }`}
+          >
             <div className="restaurantName">
               <Link to={`/restaurant/${restaurant.id}`}>{restaurant.name}</Link>
-              <span> {!restaurant.hasLunch ? "*" : ""}</span>
             </div>
             <div>{shortestDirection.distance?.text}</div>
             <div>{shortestDirection.duration?.text}</div>

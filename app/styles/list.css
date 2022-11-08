@@ -33,6 +33,11 @@
   text-align: start;
 }
 
+.noLunch a,
+.noLunch div {
+  color: lightgray
+}
+
 .rating {
   display: flex;
   justify-content: center;
